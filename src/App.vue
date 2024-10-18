@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { RouterLink, RouterView } from 'vue-router'
-console.log(import.meta.env.VITE_FIREBASE_CONFIG)
+import { RouterLink, RouterView } from 'vue-router';
+console.log(import.meta.env.VITE_FIREBASE_CONFIG);
 </script>
 
 <template>
@@ -10,6 +10,7 @@ console.log(import.meta.env.VITE_FIREBASE_CONFIG)
     <div class="wrapper">
       <nav>
         <RouterLink to="/">Home</RouterLink>
+        <RouterLink to="/login">Iniciar Sesión</RouterLink> <!-- Enlace a la vista de Login -->
       </nav>
     </div>
   </header>
