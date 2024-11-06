@@ -1,43 +1,43 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue';
-import { Firebase } from '@/utilities/firebase.service';
-import { RouterLink, useRouter } from 'vue-router';
+import { ref, computed } from 'vue'
+import { Firebase } from '@/utilities/firebase.service'
+import { RouterLink, useRouter } from 'vue-router'
 
-const firebase = new Firebase();
-const router = useRouter();
+const firebase = new Firebase()
+const router = useRouter()
 
-const email = ref('');
-const password = ref('');
-const emailError = ref('');
-const passwordError = ref('');
+const email = ref('')
+const password = ref('')
+const emailError = ref('')
+const passwordError = ref('')
 
-const emailFormat = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // Expresión regular para validar el formato del correo
+const emailFormat = /^[^\s@]+@[^\s@]+\.[^\s@]+$/ // Expresión regular para validar el formato del correo
 
 const isEmailValid = computed(() => {
-  emailError.value = email.value.match(emailFormat) ? '' : 'Formato de correo inválido';
-  return !emailError.value;
-});
+  emailError.value = email.value.match(emailFormat) ? '' : 'Formato de correo inválido'
+  return !emailError.value
+})
 
 const isPasswordValid = computed(() => {
-  passwordError.value = password.value ? '' : 'La contraseña no puede estar vacía';
-  return !passwordError.value;
-});
+  passwordError.value = password.value ? '' : 'La contraseña no puede estar vacía'
+  return !passwordError.value
+})
 
 const isFormValid = computed(() => {
-  return isEmailValid.value && isPasswordValid.value;
-});
+  return isEmailValid.value && isPasswordValid.value
+})
 
 const handleSubmit = async () => {
   if (isFormValid.value) {
     try {
-      await firebase.signIn({ email: email.value, password: password.value });
-      router.push({ name: 'home' }); // Redirigir a la página principal
+      await firebase.signIn({ email: email.value, password: password.value } as User)
+      router.push({ name: 'home' }) // Redirigir a la página principal
     } catch (error) {
-      console.error("Error al iniciar sesión:", error);
-      alert('Error al iniciar sesión. Verifica tus credenciales.');
+      console.error('Error al iniciar sesión:', error)
+      alert('Error al iniciar sesión. Verifica tus credenciales.')
     }
   }
-};
+}
 </script>
 
 <template>
