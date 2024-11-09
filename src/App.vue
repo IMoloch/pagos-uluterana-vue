@@ -10,6 +10,7 @@ console.log(import.meta.env.VITE_FIREBASE_CONFIG)
     <div class="wrapper">
       <nav>
         <RouterLink to="/">Home</RouterLink>
+        <RouterLink to="/months">Meses</RouterLink>
       </nav>
     </div>
   </header>
