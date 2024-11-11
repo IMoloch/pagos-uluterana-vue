@@ -1,7 +1,7 @@
-import { createRouter, createWebHistory } from 'vue-router';
+import { createRouter, createWebHistory } from 'vue-router'
 import { Firebase } from '@/utilities/firebase.service'
-import HomeView from '../views/HomeView.vue';
-import LoginView from '../views/LoginView.vue'; // Importar la vista de Login
+import HomeView from '../views/HomeView.vue'
+import LoginView from '../views/LoginView.vue' // Importar la vista de Login
 
 // const firebase = new Firebase()
 
@@ -11,7 +11,7 @@ const router = createRouter({
     {
       path: '/',
       name: 'home',
-      component: HomeView,
+      component: HomeView
       // meta: { requiresAuth: true }
     },
     {
@@ -20,7 +20,7 @@ const router = createRouter({
       component: LoginView
     }
   ]
-});
+})
 
 // router.beforeEach(async (to) => {
 //   const isAuth = await firebase.getAuth();
@@ -31,4 +31,4 @@ const router = createRouter({
 //   }
 // });
 
-export default router;
+export default router
