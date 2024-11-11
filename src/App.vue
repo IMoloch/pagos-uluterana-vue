@@ -1,6 +1,11 @@
 <script setup lang="ts">
 import { RouterLink, RouterView } from 'vue-router';
-console.log(import.meta.env.VITE_FIREBASE_CONFIG);
+import { Firebase } from '@/utilities/firebase.service'
+const firebase = new Firebase()
+
+const signOut = () => {
+  firebase.signOut()
+}
 </script>
 
 <template>
@@ -9,8 +14,9 @@ console.log(import.meta.env.VITE_FIREBASE_CONFIG);
 
     <div class="wrapper">
       <nav>
-        <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/login">Iniciar Sesión</RouterLink> <!-- Enlace a la vista de Login -->
+        <RouterLink :to="{name: 'home'}">Home</RouterLink>
+        <RouterLink :to="{name: 'login'}">Iniciar Sesión</RouterLink> <!-- Enlace a la vista de Login -->
+        <p @click="signOut">Cerrar Sesion</p>
       </nav>
     </div>
   </header>

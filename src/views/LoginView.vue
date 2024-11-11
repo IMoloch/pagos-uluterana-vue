@@ -2,9 +2,11 @@
 import { ref, computed } from 'vue'
 import { Firebase } from '@/utilities/firebase.service'
 import { RouterLink, useRouter } from 'vue-router'
+import { useCurrentUser } from '@/stores/currentUser'
 
 const firebase = new Firebase()
 const router = useRouter()
+const currentUser = useCurrentUser()
 
 const email = ref('')
 const password = ref('')
@@ -30,7 +32,17 @@ const isFormValid = computed(() => {
 const handleSubmit = async () => {
   if (isFormValid.value) {
     try {
-      await firebase.signIn({ email: email.value, password: password.value } as User)
+      const userInfo = await firebase.signIn({
+        email: email.value,
+        password: password.value
+      } as User)
+      console.log(userInfo.user.uid)
+
+      const path = `/users/${userInfo.user.uid}`
+      firebase.getDocument(path).then((userInfo) => {
+        currentUser.saveCurrentUser(userInfo as User)
+      })
+
       router.push({ name: 'home' }) // Redirigir a la página principal
     } catch (error) {
       console.error('Error al iniciar sesión:', error)

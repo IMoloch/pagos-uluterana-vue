@@ -1,5 +1,18 @@
 import router from '@/router'
 import { initializeApp } from 'firebase/app'
+import { getDatabase } from 'firebase/database'
+import {
+  addDoc,
+  collection,
+  deleteDoc,
+  doc,
+  getDoc,
+  getDocs,
+  getFirestore,
+  query,
+  setDoc,
+  updateDoc
+} from 'firebase/firestore'
 import {
   getAuth,
   createUserWithEmailAndPassword,
@@ -12,6 +25,7 @@ const firebaseConfig = JSON.parse(import.meta.env.VITE_FIREBASE_CONFIG)
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig)
+const db = getFirestore()
 
 export class Firebase {
   auth = getAuth(app)
@@ -54,6 +68,53 @@ export class Firebase {
     } catch (error) {
       throw new Error()
     }
-    router.push({ name: 'Login' })
+    router.push({ name: 'login' })
+  }
+
+  // ====================================== BASE DE DATOS =======================================
+
+  // =================== OBTENER COLECCION ====================
+  getCollectionData(path: string, collectionQuery?: any) {
+    const q = query(collection(db, path), collectionQuery)
+    return getDocs(q)
+  }
+
+  // =================== SET UN DOCUMENTO ====================
+  setDocument(path: string, data: any) {
+    return setDoc(doc(db, path), data)
+  }
+
+  // =================== ACTUALIZAR UN DOCUMENTO ====================
+  updateDocument(path: string, data: any) {
+    return updateDoc(doc(db, path), data)
+  }
+
+  // =================== ELIMINAR UN DOCUMENTO ====================
+  deleteDocument(path: string) {
+    return deleteDoc(doc(db, path))
+  }
+
+  // =================== AGREGAR UN DOCUMENTO ====================
+  addDocument(path: string, data: any) {
+    return addDoc(collection(db, path), data)
+  }
+
+  // =================== OBTENER UN DOCUMENTO ====================
+  async getDocument(path: string) {
+    return (await getDoc(doc(db, path))).data()
+  }
+
+  // ====================================== ALMACENAMIENTO =======================================
+  // =================== SUBIR PDF A FIREBASE STORAGE ====================
+  // async uploadPdfToStorage(pdfBlob: Blob, filename: string): Promise<string> {
+  // const user: User = this.utilsSvc.getFromLocalStorage('user')
+  // const storageRef = this.storage.ref(`${user.uid}/${filename}.pdf`);
+  // await storageRef.put(pdfBlob);
+  // return storageRef.getDownloadURL().toPromise();
+  // }
+
+  // =================== GUARDAR URL DEL PDF EN FIRESTORE ====================
+  async savePdfUrlToFirestore(downloadURL: string, path: string) {
+    await this.setDocument(path, { url: downloadURL })
   }
 }
