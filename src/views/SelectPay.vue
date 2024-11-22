@@ -6,7 +6,7 @@
       <!-- Columna de los Filtros -->
       <div class="flex flex-col items-center">
         <!-- Filtro del Ciclo -->
-        <div class="mb-4 w-80">
+        <div class="mb-4 w-80 shadow-lg">
           <label for="ciclo" class="block text-sm font-medium text-gray-700">Selecciona el Ciclo</label>
           <select id="ciclo" v-model="selectedCiclo" class="select select-bordered w-full">
             <option disabled value="">Elige un Ciclo</option>
@@ -15,7 +15,7 @@
         </div>
 
         <!-- Filtro del Mes -->
-        <div class="mb-4 w-80">
+        <div class="mb-4 w-80 shadow-lg">
           <label for="mes" class="block text-sm font-medium text-gray-700">Selecciona el Mes</label>
           <select id="mes" v-model="selectedMes" class="select select-bordered w-full">
             <option disabled value="">Elige un Mes</option>
@@ -24,7 +24,7 @@
         </div>
 
         <!-- Filtro del Método de Pago -->
-        <div class="mb-4 w-80">
+        <div class="mb-4 w-80 shadow-lg">
           <label for="metodo" class="block text-sm font-medium text-gray-700">Selecciona el Método de Pago</label>
           <select id="metodo" v-model="selectedMetodo" class="select select-bordered w-full">
             <option disabled value="">Elige un Método de Pago</option>
@@ -35,57 +35,91 @@
 
       <!-- Columna de la Imagen -->
       <div class="flex justify-center">
-        <!-- <img src="\src\assets\logo-uls.png" alt="Logo ULS" class="w-1/2 h-auto"> -->
+        <img src="\src\assets\logo-uls.png" alt="Logo ULS" class="w-1/2 h-auto">
       </div>
     </div>
 
-    <!-- Botón de Realizar Pago (fila completa) -->
     <div class="mt-60 flex justify-center items-end w-full">
       <button @click="realizarPago" class="btn btn-primary  w-60">
         Realizar Pago
       </button>
     </div>
+
   </div>
 
 </template>
 
 
 <script>
+import { ref, computed, watch } from 'vue'
+import { useRouter } from 'vue-router'
 
-import { ref, computed } from 'vue'
 
 export default {
-    setup() {
-        // Datos reactivos para los filtros
-        const selectedCiclo = ref('')  // Filtro del ciclo
-        const selectedMes = ref('')    // Filtro del mes
-        const selectedMetodo = ref('') // Filtro del método de pago
+  setup() {
+    const router = useRouter()
+    const selectedCiclo = ref('')
+    const selectedMes = ref('')
+    const selectedMetodo = ref('')
+    const ultimaFechaDePago = ref('')
 
-        // Listas de opciones
-        const ciclos = ref(['Ciclo 1', 'Ciclo 2'])
-        const meses1 = ref(['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio'])
-        const meses2 = ref(['Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'])
-        const meses = computed(() => {
-          return selectedCiclo.value === 'Ciclo 1' ? meses1.value : meses2.value;
-        });
-        const metodosPago = ref(['Tarjeta de crédito', 'PayPal', 'Transferencia'])
+    const ciclos = ref(['Ciclo 1', 'Ciclo 2', 'Matricula'])
+    const meses1 = ref(['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio'])
+    const meses2 = ref(['Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'])
+    const matricula = ref(['Seguro', 'Papeleria'])
 
-        // Método para manejar el pago
-        const realizarPago = () => {
-            console.log(`Ciclo: ${selectedCiclo.value}, Mes: ${selectedMes.value}, Método de pago: ${selectedMetodo.value}`)
-            alert('Pago realizado con éxito')
-        }
 
-        return {
-            selectedCiclo,
-            selectedMes,
-            selectedMetodo,
-            ciclos,
-            meses,
-            metodosPago,
-            realizarPago,
-        }
+const opciones = {
+    'Ciclo 1': meses1,
+    'Ciclo 2': meses2,
+    'Matricula': matricula
+};
+
+const meses = computed(() => {
+  return opciones[selectedCiclo.value]?.value || opciones[selectedCiclo.value] || [];
+});
+
+
+    const metodosPago = ref(['Tarjeta de crédito', 'PayPal', 'Transferencia'])
+
+    watch(selectedMes, (nuevoMes) => {
+      if (selectedCiclo.value === 'Matricula') {
+    ultimaFechaDePago.value = new Date().toLocaleDateString();; // Se asigna directamente "Matricula"
+    return; // Salir del watch, no es necesario procesar más
+  }
+      // Actualiza `ultimaFechaDePago` cuando cambie el mes seleccionado
+      const index = meses.value.indexOf(nuevoMes)
+      if (index >= 0) {
+        let mesAjustado = index + 1
+        if (selectedCiclo.value === 'Ciclo 2') {
+          mesAjustado += 6}
+        ultimaFechaDePago.value = `25/${mesAjustado.toString().padStart(2, '0')}/2024`
+      }
+    })
+
+    const realizarPago = () => {
+      console.log(`Ciclo: ${selectedCiclo.value}, Mes: ${selectedMes.value}, Método de pago: ${selectedMetodo.value}`)
+      alert('Quieres realizar el pago de es mes')
+
+      router.push({
+    path: '/DetailPay',
+    query: {
+      ultimaFechaDePago: ultimaFechaDePago.value,
+      selectedCiclo: selectedCiclo.value,
+      selectedMes: selectedMes.value, // Pasar el mes seleccionado 
+      } })
     }
-}
 
+    return {
+      selectedCiclo,
+      selectedMes,
+      selectedMetodo,
+      ciclos,
+      meses,
+      metodosPago,
+      ultimaFechaDePago,
+      realizarPago,
+    }
+  }
+}
 </script>
