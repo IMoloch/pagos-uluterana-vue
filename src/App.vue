@@ -17,6 +17,7 @@ const signOut = () => {
         <RouterLink to="/">Home</RouterLink>
         <RouterLink to="/months">Meses</RouterLink>
         <RouterLink to="/profile">Profile</RouterLink>
+        <button @click="signOut">Cerrar</button>
 
       </nav>
     </div>

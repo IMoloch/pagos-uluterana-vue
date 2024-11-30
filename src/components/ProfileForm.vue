@@ -20,6 +20,7 @@
               </label>
               <input
                 id="name"
+                v-model="name"
                 type="text"
                 class="input input-bordered w-full"
                 placeholder="Introduce tu nombre"
@@ -34,6 +35,7 @@
               <input
                 id="carnet"
                 type="text"
+                v-model="carnet"
                 class="input input-bordered w-full"
                 placeholder="Introduce tu carnet"
               />
@@ -47,6 +49,7 @@
               <input
                 id="carrera"
                 type="text"
+                v-model="carrera"
                 class="input input-bordered w-full"
                 placeholder="Introduce tu carrera"
               />
@@ -60,6 +63,7 @@
               <input
                 id="email"
                 type="text"
+                v-model="email"
                 class="input input-bordered w-full"
                 placeholder="Introduce tu correo electrónico"
               />
@@ -90,11 +94,46 @@
   </template>
   
   <script setup lang="ts">
-  import { ref } from 'vue'
+  import { onMounted, ref } from 'vue'
+  import { useCurrentUser } from '@/stores/currentUser'
+import { Firebase } from '@/utilities/firebase.service'
+
+const userStore = useCurrentUser()
+const firebaseSvc = new Firebase()
+
+// Estado de carga y tarjetas (simulado)
+const loading = ref(false)
   
   // Variables para validaciones (solo visuales por ahora)
   const emailTouched = ref(false)
   const emailValid = ref(true)
+
+  const name = ref('')
+  const carnet = ref('')
+  const carrera = ref('')
+  const email = ref('')
+
+  // OBTENER LA INFORMACION DEL USUARIO
+const getUserInfo = () => {
+  loading.value = true
+  let path = `users/${userStore.currentUser?.uid}`
+  let query: never[] = []
+
+  firebaseSvc
+    .getDocument(path)
+    .then((userInfo) => {
+      console.log(userInfo);
+      name.value = userInfo?.name
+      carnet.value = userInfo?.carnet
+      carrera.value = userInfo?.carrera
+      email.value = userInfo?.email
+    })
+    .finally(() => (loading.value = false))
+}
+
+onMounted(() => {
+  getUserInfo()
+})
   </script>
   
   <style scoped>

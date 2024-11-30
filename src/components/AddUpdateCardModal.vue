@@ -24,7 +24,7 @@
           <label class="block font-semibold mb-1">Número de tarjeta {{}}</label>
           <input
             type="text"
-            v-model="cardData.number"
+            v-model="cardNumber"
             @input="formatCardNumber"
             required
             class="input input-bordered w-full"
@@ -38,7 +38,7 @@
           <label class="block font-semibold mb-1">Nombre de propietario</label>
           <input
             type="text"
-            v-model="cardData.name"
+            v-model="cardOwner"
             @input="validateCardOwner"
             required
             class="input input-bordered w-full"
@@ -50,7 +50,7 @@
           <label class="block font-semibold mb-1">Fecha de expiración</label>
           <input
             type="text"
-            v-model="cardData.expDate"
+            v-model="expirationDate"
             @input="validateExpirationDate"
             placeholder="MM/AA"
             required
@@ -94,16 +94,19 @@
 
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
-import { defineProps, defineEmits } from 'vue'
 
 const props = defineProps<{
   isOpen: Boolean
-  card: Card // Tarjeta seleccionada (si existe)
+  card: Card | undefined// Tarjeta seleccionada (si existe)
 }>()
 
 const emit = defineEmits(['close', 'save', 'delete', 'update:card'])
 
 const cardData = ref<Card>()
+const cardNumber = ref('')
+const cardOwner = ref('')
+const expirationDate = ref('')
+const cvv = ref('')
 
 const errors = ref({ cardNumber: '', cardOwner: '', expirationDate: '', cvv: '' })
 const isEditMode = computed(() => !!props.card)
@@ -112,16 +115,16 @@ watch(
   (newCard) => {
     if (!isEditMode.value) return
     if (newCard) {
-      cardData.value = { ...newCard }
+      cardNumber.value = newCard.number
+      cardOwner.value = newCard.name
+      expirationDate.value = newCard.expDate
+      cvv.value = newCard.cvv || ''
     } else {
       // Limpiar el objeto cuando no hay tarjeta
-      cardData.value = {
-        id: '',
-        number: '',
-        name: '',
-        expDate: '',
-        cvv: ''
-      }
+      cardNumber.value = ''
+      cardOwner.value = ''
+      expirationDate.value = ''
+      cvv.value = ''
     }
   },
   { immediate: true } // Ejecutar inmediatamente cuando el componente se monta
@@ -130,7 +133,7 @@ watch(
 const formatCardNumber = (event: Event) => {
   const target = event.target as HTMLInputElement
   // Remueve todos los espacios y luego agrega un espacio cada cuatro dígitos
-  cardData.value.number = target.value
+  cardNumber.value = target.value
     .replace(/\s+/g, '')
     .replace(/(.{4})/g, '$1 ')
     .trim()
@@ -138,25 +141,25 @@ const formatCardNumber = (event: Event) => {
 }
 
 const validateCardNumber = () => {
-  errors.value.cardNumber = /^\d{4} \d{4} \d{4} \d{4}$/.test(cardData.value?.number)
+  errors.value.cardNumber = /^\d{4} \d{4} \d{4} \d{4}$/.test(cardNumber.value)
     ? ''
     : 'El número de tarjeta debe tener 16 dígitos en formato 1234 5678 1234 5678.'
 }
 
 const validateCardOwner = () => {
-  errors.value.cardOwner = /^[A-Za-z\s]+$/.test(cardData.value?.name)
+  errors.value.cardOwner = /^[A-Za-z\s]+$/.test(cardOwner.value)
     ? ''
     : 'El nombre solo debe contener letras y espacios.'
 }
 
 const validateExpirationDate = () => {
-  errors.value.expirationDate = /^(0[1-9]|1[0-2])\/\d{2}$/.test(cardData.value?.expDate)
+  errors.value.expirationDate = /^(0[1-9]|1[0-2])\/\d{2}$/.test(expirationDate.value)
     ? ''
     : 'La fecha de expiración debe estar en formato MM/AA.'
 }
 
 const validateCVV = () => {
-  errors.value.cvv = /^\d{3}$/.test(cardData.value?.cvv) ? '' : 'El CVV debe tener 3 dígitos.'
+  errors.value.cvv = /^\d{3}$/.test(cvv.value) ? '' : 'El CVV debe tener 3 dígitos.'
 }
 
 const handleSubmit = () => {
@@ -172,7 +175,7 @@ const handleSubmit = () => {
       expDate: expirationDate.value,
       cvv: !isEditMode.value ? cvv.value : null
     }
-    emit(isEditMode.value ? 'save' : 'add', cardData)
+    emit('save', cardData)
     emit('close')
   }
 }
