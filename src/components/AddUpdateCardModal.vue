@@ -100,13 +100,14 @@ const props = defineProps<{
   card: Card | undefined// Tarjeta seleccionada (si existe)
 }>()
 
-const emit = defineEmits(['close', 'save', 'delete', 'update:card'])
+const emit = defineEmits(['close', 'save', 'delete'])
 
 const cardData = ref<Card>()
 const cardNumber = ref('')
 const cardOwner = ref('')
 const expirationDate = ref('')
 const cvv = ref('')
+const id = ref('')
 
 const errors = ref({ cardNumber: '', cardOwner: '', expirationDate: '', cvv: '' })
 const isEditMode = computed(() => !!props.card)
@@ -119,12 +120,14 @@ watch(
       cardOwner.value = newCard.name
       expirationDate.value = newCard.expDate
       cvv.value = newCard.cvv || ''
+      id.value = newCard.id || ''
     } else {
       // Limpiar el objeto cuando no hay tarjeta
       cardNumber.value = ''
       cardOwner.value = ''
       expirationDate.value = ''
       cvv.value = ''
+      id.value = ''
     }
   },
   { immediate: true } // Ejecutar inmediatamente cuando el componente se monta
@@ -173,7 +176,8 @@ const handleSubmit = () => {
       number: cardNumber.value.replace(/\s+/g, ''), // Guarda el número sin espacios
       name: cardOwner.value,
       expDate: expirationDate.value,
-      cvv: !isEditMode.value ? cvv.value : null
+      cvv: cvv.value,
+      id: id.value,
     }
     emit('save', cardData)
     emit('close')

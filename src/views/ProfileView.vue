@@ -10,8 +10,9 @@
     <AddUpdateCardModal
       :isOpen="isModalOpen"
       :card="selectedCard"
+      @save="handleUpdateCard"
+      @delete="handleDeleteCard"
       @close="closeModal"
-      @update:card="handleUpdateCard"
     />
   </div>
 </template>
@@ -23,7 +24,11 @@ import { ref } from 'vue'
 import ProfileForm from '@/components/ProfileForm.vue'
 import CardList from '@/components/CardList.vue'
 import AddUpdateCardModal from '@/components/AddUpdateCardModal.vue'
+import { Firebase } from '@/utilities/firebase.service';
+import { useCurrentUser } from '@/stores/currentUser';
 
+const firebase = new Firebase()
+const currentUser = useCurrentUser()
 // Estado para controlar la visibilidad del modal y la tarjeta seleccionada
 const isModalOpen = ref(false)
 const selectedCard = ref<Card>()
@@ -48,6 +53,22 @@ const closeModal = () => {
 
 const handleUpdateCard = (newValue: Card) => {
   selectedCard.value = newValue
+  console.log(selectedCard.value);
+  
+  const path = `users/${currentUser.currentUser?.uid}/cards/${newValue.id}`
+  firebase.updateDocument(path, selectedCard.value as Card).then((res) => {
+    console.log("tarjeta actualizada")
+    
+  })
+}
+
+const handleDeleteCard = (selectedCard: Card) => {
+  console.log(selectedCard);
+  const path = `users/${currentUser.currentUser?.uid}/cards/${selectedCard.id}`
+  firebase.deleteDocument(path).then((res) => {
+    console.log("tarjeta eliminada")
+    
+  })
 }
 </script>
 

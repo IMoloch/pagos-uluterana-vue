@@ -24,6 +24,7 @@
                 type="text"
                 class="input input-bordered w-full"
                 placeholder="Introduce tu nombre"
+                disabled
               />
             </div>
   
@@ -38,6 +39,7 @@
                 v-model="carnet"
                 class="input input-bordered w-full"
                 placeholder="Introduce tu carnet"
+                disabled
               />
             </div>
   
@@ -52,6 +54,7 @@
                 v-model="carrera"
                 class="input input-bordered w-full"
                 placeholder="Introduce tu carrera"
+                disabled
               />
             </div>
   
