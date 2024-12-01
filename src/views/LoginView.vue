@@ -4,7 +4,7 @@ import { ref, computed } from 'vue'
 import { Firebase } from '@/utilities/firebase.service'
 import { RouterLink, useRouter } from 'vue-router'
 import { useCurrentUser } from '@/stores/currentUser'
-import spinnerOverlay from '@/components/spinnerOverlay.vue'
+import SpinnerOverlay from '@/components/SpinnerOverlay.vue'
 
 const firebase = new Firebase()
 const router = useRouter()

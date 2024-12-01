@@ -114,7 +114,7 @@
 
 <script setup lang="ts">
 import { reactive, computed, ref } from 'vue'
-import SpinnerOverlay from '@/components/spinnerOverlay.vue'
+import SpinnerOverlay from '@/components/SpinnerOverlay.vue'
 import { useFirebaseService } from '@/utilities/firebase.service'
 import { useCurrentUser } from '@/stores/currentUser'
 import router from '@/router'

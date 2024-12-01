@@ -1,14 +1,39 @@
-# pagos-uluterana-vue
+# Pagos-ULuterana
 
-This template should help get you started developing with Vue 3 in Vite.
+Prototipo pensado para que los estudiantes de la Universidad Luterana Salvadoreña poder realizar pagos en línea
+Implementado con la SDK de Paypal para JavaScript
 
-## Recommended IDE Setup
+## Tecnologías​ 🛠️
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+Html
 
-## Type Support for `.vue` Imports in TS
+Css
 
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
+Tailwind
+
+Typescript
+
+Vue3
+
+Visual Studio Code ( Editor recomendado ) ✔️
+
+https://code.visualstudio.com/
+
+## Clonar el proyecto
+
+```sh
+git clone https://github.com/IMoloch/pagos-uluterana-vue
+```
+
+## Vista Proyecto
+
+[Ver Proyecto](https://pagos-uluterana.netlify.app/)
+
+Página Info de Pokemon
+![alt text](./readme_assets/home.png)
+
+Página Pokemon Random
+![alt text](./readme_assets/payment.png)
 
 ## Customize configuration
 
@@ -30,16 +55,4 @@ npm run dev
 
 ```sh
 npm run build
-```
-
-### Run Unit Tests with [Vitest](https://vitest.dev/)
-
-```sh
-npm run test:unit
-```
-
-### Lint with [ESLint](https://eslint.org/)
-
-```sh
-npm run lint
 ```
