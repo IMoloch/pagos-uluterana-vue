@@ -33,7 +33,12 @@ export function usePdf() {
    * @param {object} studentInfo - Información del estudiante
    * @returns {Promise<string>} - URL del PDF generado en Firebase Storage
    */
-  const generarPdf = async (ultimaFechaDePago, mesPagar, fechaActual, studentInfo) => {
+  const generarPdf = async (
+    ultimaFechaDePago: string,
+    mesPagar: string,
+    fechaActual: Date,
+    studentInfo: User
+  ): Promise<string> => {
     const doc = new jsPDF()
 
     // Agregar los textos básicos al PDF

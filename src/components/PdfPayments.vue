@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import { generarPdf } from '@/services/pdf.service';
+import { generarPdf } from '@/services/pdf.service'
 
 export default {
   name: 'PdfPayment',
@@ -28,30 +28,30 @@ export default {
     <p style="color: #000000; font-size: 10px;">Última fecha de pago: ${ultimaFechaDePago}</p>
     <p style="color: #000000; font-size: 10px;">Fecha actual: ${fechaActual.toLocaleDateString()}</p>
   </div>
-      `;
+      `
 
-      const headers = [['Campo', 'Información']];
+      const headers = [['Campo', 'Información']]
       const data = [
         ['Estudiante', 'Willian Romero'],
         ['Carnet', 'RA01137239'],
         ['Mes a pagar', 'Diciembre'],
         ['Cantidad a pagar', '$45 (No aplica Mora)'],
         ['Última fecha de pago', '30/11/2024'],
-        ['Fecha actual', new Date().toLocaleDateString()],
-      ];
+        ['Fecha actual', new Date().toLocaleDateString()]
+      ]
 
-      const foot = [['', 'Total a pagar', '$45']];
+      const foot = [['', 'Total a pagar', '$45']]
 
       try {
-        const pdfBlob = await generarPdf(htmlContent, 'recibo.pdf', headers, data, foot, 240, 450);
-        const url = URL.createObjectURL(pdfBlob);
-        window.open(url, '_blank');
+        const pdfBlob = await generarPdf(htmlContent, 'recibo.pdf', headers, data, foot, 240, 450)
+        const url = URL.createObjectURL(pdfBlob)
+        window.open(url, '_blank')
       } catch (error) {
-        console.error('Error al generar el PDF:', error);
+        console.error('Error al generar el PDF:', error)
       }
-    };
+    }
 
-    return { generarRecibo };
-  },
-};
+    return { generarRecibo }
+  }
+}
 </script>

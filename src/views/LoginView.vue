@@ -30,7 +30,7 @@ const isFormValid = computed(() => isEmailValid.value && isPasswordValid.value)
 const handleSubmit = async () => {
   validateEmail()
   validatePassword()
-  
+
   if (isFormValid.value) {
     try {
       const userInfo = await firebase.signIn({

@@ -1,3 +1,4 @@
+import router from '@/router'
 import { initializeApp } from 'firebase/app'
 import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from 'firebase/storage'
 import {
@@ -64,7 +65,7 @@ export class Firebase {
     }
   }
 
-  signOut(router: any) {
+  signOut() {
     try {
       this.auth.signOut()
     } catch (error) {

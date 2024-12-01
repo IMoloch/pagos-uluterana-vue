@@ -47,6 +47,8 @@ const firebase = new Firebase()
 // Props del componente
 const props = defineProps<{
   ultimaFechaDePago: string
+  selectedCiclo: string
+  selectedMes: string
 }>()
 
 // Usa el servicio para generar PDF
@@ -91,9 +93,26 @@ const handleGeneratePDF = async () => {
   }
 }
 
-// GENERA EL PATH PARA LA ACUTALIZACIÓN DE DATOS EN FIRESTORE
-const getPath = () => {
-  const path: string = `users/${studentInfo.uid}/semesters/${semester.cycle}-${semester.year}/payments/${selectedMonth.getMonth().id}`
-  return path
+// ACTUALIZA LOS DATOS DE MONTH
+const updatePaidInfo = async (ticketUrl: string) => {
+  const currentDate = new Date()
+  const month: Month = selectedMonth.getMonth() // Obtener el mes seleccionado
+
+  // Construcción de los datos para Firestore
+  const updatedData: Partial<Month> = {
+    paid: true,
+    paidDate: `${currentDate.getFullYear()}-${currentDate.getMonth() + 1}-${currentDate.getDate()}`,
+    ticketUrl: ticketUrl // URL del PDF
+  }
+
+  // Path al documento del mes en Firestore
+  const path = `users/${studentInfo.uid}/semesters/${props.selectedCiclo}-${2024}/payments/${props.selectedMes}`
+
+  try {
+    await firebase.updateDocument(path, updatedData)
+    console.log('Datos del mes actualizados correctamente')
+  } catch (error) {
+    console.error('Error al actualizar los datos del mes:', error)
+  }
 }
 </script>

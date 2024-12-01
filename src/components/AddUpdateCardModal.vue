@@ -97,12 +97,11 @@ import { ref, computed, watch } from 'vue'
 
 const props = defineProps<{
   isOpen: Boolean
-  card: Card | undefined// Tarjeta seleccionada (si existe)
+  card: Card | undefined // Tarjeta seleccionada (si existe)
 }>()
 
 const emit = defineEmits(['close', 'save', 'delete'])
 
-const cardData = ref<Card>()
 const cardNumber = ref('')
 const cardOwner = ref('')
 const expirationDate = ref('')
@@ -177,7 +176,7 @@ const handleSubmit = () => {
       name: cardOwner.value,
       expDate: expirationDate.value,
       cvv: cvv.value,
-      id: id.value,
+      id: id.value
     }
     emit('save', cardData)
     emit('close')

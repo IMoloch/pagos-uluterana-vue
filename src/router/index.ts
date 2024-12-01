@@ -36,7 +36,11 @@ const router = createRouter({
       path: '/DetailPay',
       name: 'DetailPay',
       component: DetailPay,
-      props: (route) => ({ ultimaFechaDePago: route.query.ultimaFechaDePago }),
+      props: (route) => ({
+        ultimaFechaDePago: route.query.ultimaFechaDePago,
+        selectedCiclo: route.query.selectedCiclo,
+        selectedMes: route.query.selectedMes
+      }),
       meta: { requiresAuth: true } // Ruta protegida
     }
   ]
