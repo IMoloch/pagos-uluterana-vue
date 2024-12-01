@@ -47,12 +47,15 @@ import { ref, computed } from 'vue'
 import { useMonthStore } from '@/stores/month'
 import { useCurrentUser } from '@/stores/currentUser'
 import { Firebase } from '@/utilities/firebase.service'
-import { usePdf } from '../utilities/pdf.service' // Importa el servicio para generar PDF
+import { usePdf } from '@/utilities/pdf.service' // Importa el servicio para generar PDF
+import { useEmailService } from '@/utilities/email.service'
 import PayPalButton from '@/components/PayPalButton.vue'
 import router from '@/router'
 
 const selectedMonth = useMonthStore()
 const firebase = new Firebase()
+const useEmail = useEmailService()
+const currentUser = useCurrentUser()
 // Props del componente
 const props = defineProps<{
   ultimaFechaDePago: string
@@ -65,7 +68,7 @@ const { generarPdf } = usePdf()
 
 // Datos del componente
 const fechaActual = ref(new Date())
-const studentInfo = useCurrentUser().getCurrentUser()
+const studentInfo = currentUser.getCurrentUser()
 
 // Cálculo del mes a pagar
 const meses = [
@@ -98,6 +101,10 @@ const handleGeneratePDF = async () => {
 
   if (downloadURL) {
     console.log('PDF disponible en:', downloadURL)
+    useEmail.sendEmail(
+      currentUser.getCurrentUser().email,
+      `Tu Factura de pago esta disponible en: ${downloadURL}`
+    )
     await updatePaidInfo(downloadURL)
   }
 }
