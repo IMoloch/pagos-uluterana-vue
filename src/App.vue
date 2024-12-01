@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { RouterLink, RouterView } from 'vue-router';
 import { Firebase } from '@/utilities/firebase.service'
+import Navigation from '@/components/NavMenu.vue';
+
 const firebase = new Firebase()
 
 const signOut = () => {
@@ -10,14 +12,14 @@ const signOut = () => {
 
 <template>
   <header>
-    <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
+    <Navigation/>
+  <!-- <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" /> -->
 
     <div class="wrapper">
       <nav>
         <RouterLink to="/">Home</RouterLink>
         <RouterLink to="/months">Meses</RouterLink>
         <RouterLink to="/profile">Profile</RouterLink>
-
       </nav>
     </div>
   </header>
