@@ -1,5 +1,5 @@
 <template>
-  <div class="container flex justify-center items-center m-5 p-2">
+  <div class="container flex justify-center items-center min-w-full m-5 p-2">
     <div class="flex flex-col space-y-5 mr-40">
       <div class="max-w-md bg-white shadow-lg rounded-lg overflow-hidden">
         <div class="bg-blue-900 px-6 py-4">
@@ -7,9 +7,9 @@
         </div>
         <div class="p-6 space-y-2 text-gray-700">
           <p>Fecha actual: {{ fechaActual.toLocaleDateString() }}</p>
-          <p>Última fecha de pago: {{ ultimaFechaDePago }}</p>
-          <p>Mes a pagar: {{ mesPagar }}</p>
-          <p>Cantidad a pagar: $45 (No aplica Mora)</p>
+          <p>Última fecha de pago: {{ selectedMonth.dueDate }}</p>
+          <p>Mes a pagar: {{ selectedMonth.id?.toLocaleUpperCase() }}</p>
+          <p>Cantidad a pagar: ${{ selectedMonth.totalFee }}</p>
         </div>
       </div>
 
@@ -21,6 +21,7 @@
           <p>Estudiante: {{ studentInfo.name }}</p>
           <p>Carnet: {{ studentInfo.carnet }}</p>
           <p>Se enviará un email a su correo asociado.</p>
+          <p>{{ studentInfo.email }}</p>
         </div>
       </div>
     </div>
@@ -31,7 +32,7 @@
   </div>
   <div class="detail-pay-container">
     <PayPalButton
-      :amount="amount"
+      :amount="selectedMonth.totalFee"
       currency="USD"
       @payment-success="handlePaymentSuccess"
       @payment-failure="handlePaymentFailure"
@@ -43,7 +44,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onBeforeMount, onUnmounted } from 'vue'
 import { useMonthStore } from '@/stores/month'
 import { useCurrentUser } from '@/stores/currentUser'
 import { Firebase } from '@/utilities/firebase.service'
@@ -52,16 +53,10 @@ import { useEmailService } from '@/utilities/email.service'
 import PayPalButton from '@/components/PayPalButton.vue'
 import router from '@/router'
 
-const selectedMonth = useMonthStore()
+const selectedMonth = useMonthStore().getMonth()
 const firebase = new Firebase()
 const useEmail = useEmailService()
 const currentUser = useCurrentUser()
-// Props del componente
-const props = defineProps<{
-  ultimaFechaDePago: string
-  selectedCiclo: string
-  selectedMes: string
-}>()
 
 // Usa el servicio para generar PDF
 const { generarPdf } = usePdf()
@@ -70,41 +65,20 @@ const { generarPdf } = usePdf()
 const fechaActual = ref(new Date())
 const studentInfo = currentUser.getCurrentUser()
 
-// Cálculo del mes a pagar
-const meses = [
-  'Enero',
-  'Febrero',
-  'Marzo',
-  'Abril',
-  'Mayo',
-  'Junio',
-  'Julio',
-  'Agosto',
-  'Septiembre',
-  'Octubre',
-  'Noviembre',
-  'Diciembre'
-]
-const mesPagar = computed(() => {
-  const mesNumero = props.ultimaFechaDePago.split('/')[1] // Extrae el mes (número)
-  return meses[+mesNumero - 1] || 'Mes no válido'
-})
-
 // Generar el PDF al hacer clic en el botón
 const handleGeneratePDF = async () => {
   const downloadURL = await generarPdf(
-    props.ultimaFechaDePago, // Última fecha de pago
-    mesPagar.value, // Mes a pagar
+    selectedMonth as Month,
     fechaActual.value, // Fecha actual
     studentInfo // Información del estudiante
   )
 
   if (downloadURL) {
     console.log('PDF disponible en:', downloadURL)
-    useEmail.sendEmail(
-      currentUser.getCurrentUser().email,
-      `Tu Factura de pago esta disponible en: ${downloadURL}`
-    )
+    // useEmail.sendEmail(
+    //   currentUser.getCurrentUser().email,
+    //   `Tu Factura de pago esta disponible en: ${downloadURL}`
+    // )
     await updatePaidInfo(downloadURL)
   }
 }
@@ -112,17 +86,16 @@ const handleGeneratePDF = async () => {
 // ACTUALIZA LOS DATOS DE MONTH
 const updatePaidInfo = async (ticketUrl: string) => {
   const currentDate = new Date()
-  const month: Month = selectedMonth.getMonth() // Obtener el mes seleccionado
 
   // Construcción de los datos para Firestore
   const updatedData: Partial<Month> = {
     paid: true,
-    paidDate: `${currentDate.getFullYear()}-${currentDate.getMonth() + 1}-${currentDate.getDate()}`,
+    paidDate: `${currentDate.getFullYear()}/${currentDate.getMonth() + 1}/${currentDate.getDate()}`,
     ticketUrl: ticketUrl // URL del PDF
   }
 
   // Path al documento del mes en Firestore
-  const path = `users/${studentInfo.uid}/semesters/${props.selectedCiclo}-${2024}/payments/${props.selectedMes}`
+  const path = `users/${studentInfo.uid}/semesters/${2}-${2024}/payments/${selectedMonth.id}`
 
   try {
     await firebase.updateDocument(path, updatedData)
@@ -132,11 +105,10 @@ const updatePaidInfo = async (ticketUrl: string) => {
   }
 }
 
-const amount = ref<number>(49.99) // Monto de ejemplo
 // Manejar éxito del pago
 const handlePaymentSuccess = (order: Record<string, any>) => {
   handleGeneratePDF().then(() => {
-    router.push({ name: 'home' })
+    router.replace({ name: 'home' })
   })
 }
 
@@ -145,6 +117,15 @@ const handlePaymentFailure = (error: Error) => {
   console.error('Error en el pago:', error)
   alert('Hubo un problema al procesar el pago.')
 }
+
+onBeforeMount(() => {
+  const selectedMonth = useMonthStore().getMonth()
+  if (!selectedMonth) router.back()
+})
+
+onUnmounted(() => {
+  useMonthStore().clearMonth()
+})
 </script>
 
 <style scoped>

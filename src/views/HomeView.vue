@@ -1,5 +1,5 @@
 <template>
-  <main class="flex flex-col justify-center items-center min-h-screen bg-gray-100">
+  <main class="flex flex-col justify-start items-center min-h-screen bg-white">
     <!-- Indicador de progreso general -->
     <div class="w-full max-w-4xl my-6 px-4">
       <div class="flex items-center justify-between mb-2">
@@ -14,37 +14,35 @@
       </div>
     </div>
 
+    <!-- Grid de botones -->
     <div class="grid grid-cols-1 gap-6 w-full max-w-4xl px-4">
-      <div class="card bg-base-100 shadow-xl w-full" v-for="(month, index) of months" :key="index">
-        <div class="card-body">
-          <div class="flex items-center justify-between">
-            <h2 class="card-title text-lg font-semibold text-gray-700">
-              {{ month.id?.toLocaleUpperCase() }} - ${{ month.totalFee }}
-            </h2>
-            <!-- Checkbox para marcar completado -->
-            <input
-              type="checkbox"
-              class="checkbox checkbox-primary"
-              v-model="month.paid"
-              @change="updateProgress"
-            />
-          </div>
-          <p class="text-gray-600">Vence: {{ month.dueDate }}</p>
+      <button
+        v-for="(month, index) in months"
+        :key="index"
+        class="btn btn-lg w-full text-left shadow-lg flex flex-col items-start justify-center p-4"
+        :class="{ 'btn-disabled': month.paid, 'btn-primary': month.paid }"
+        :disabled="month.paid"
+        @click="saveMonth(month)"
+      >
+        <div class="flex items-center justify-between w-full">
+          <h2 class="text-lg font-semibold text-gray-700">
+            {{ month.id?.toLocaleUpperCase() }} - ${{ month.totalFee }}
+          </h2>
+          <p class="text-gray-600 mt-2">Vence: {{ month.dueDate }}</p>
         </div>
-      </div>
-      <!-- <div @click="saveMonth(month as Month)">
-        {{ month }}
-      </div> -->
+      </button>
     </div>
   </main>
 </template>
 
 <script setup lang="ts">
+import router from '@/router'
 import { useCurrentUser } from '@/stores/currentUser'
 import { useMonthStore } from '@/stores/month'
 import { Firebase } from '@/utilities/firebase.service'
 import { orderBy, where } from 'firebase/firestore'
 import { onMounted, ref, computed } from 'vue'
+import DetailPay from './DetailPay.vue'
 
 const currentUser = useCurrentUser()
 const monthStore = useMonthStore()
@@ -62,7 +60,7 @@ const semester = {
 function getMonths() {
   loading.value = true
   let path = `users/${userInfo.value?.uid}/semesters/${2}-${semester.year}/payments`
-  let query = [orderBy('dueDate', 'asc'), where('paid', '==', false)]
+  let query = [orderBy('dueDate', 'asc')]
 
   firebaseSvc
     .getCollectionData(path, ...query)
@@ -76,7 +74,8 @@ function getMonths() {
 
 function saveMonth(month: Month) {
   monthStore.saveMonth(month as Month)
-  console.log(monthStore.getMonth())
+  console.log('Mes guardado:', monthStore.getMonth())
+  router.push({ name: 'DetailPay' })
 }
 
 onMounted(() => {
@@ -101,23 +100,12 @@ const completedCount = computed(() => months.value.filter((month) => month.paid)
 const progress = computed(() =>
   months.value.length > 0 ? Math.round((completedCount.value / months.value.length) * 100) : 0
 )
-
-// Actualizar progreso (opcional, si necesitas alguna acción extra)
-function updateProgress() {
-  console.log('Progreso actualizado:', progress.value + '%')
-}
 </script>
 
 <style scoped>
 /* Personalización adicional */
 .main {
   background-color: #f8fafc;
-}
-.checkbox {
-  transform: scale(1.2);
-}
-.card {
-  transition: box-shadow 0.3s ease;
 }
 .card:hover {
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);

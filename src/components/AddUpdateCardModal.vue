@@ -1,5 +1,9 @@
 <template>
-  <div v-if="isOpen" class="modal-overlay">
+  <div
+    v-if="isOpen"
+    class="modal-overlay fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50"
+    @click.self="closeModal"
+  >
     <div class="modal-container bg-white p-5 rounded-lg relative shadow-lg max-w-md w-full">
       <!-- Franja azul superior -->
       <div
@@ -12,7 +16,7 @@
         <!-- Botón de cierre centrado en la franja -->
         <button
           class="close-button absolute right-4 text-white hover:text-gray-300"
-          @click="$emit('close')"
+          @click="closeModal"
         >
           ✖
         </button>
@@ -93,7 +97,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue'
 
 const props = defineProps<{
   isOpen: Boolean
@@ -182,6 +186,27 @@ const handleSubmit = () => {
     emit('close')
   }
 }
+
+// Función para cerrar el modal
+const closeModal = () => {
+  emit('close')
+}
+
+// Manejar el evento de tecla ESC
+const handleEscKey = (event: KeyboardEvent) => {
+  if (event.key === 'Escape' && props.isOpen) {
+    closeModal()
+  }
+}
+
+// Agregar y remover el evento de teclado
+onMounted(() => {
+  window.addEventListener('keydown', handleEscKey)
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener('keydown', handleEscKey)
+})
 
 const handleDelete = () => {
   emit('delete', props.card)

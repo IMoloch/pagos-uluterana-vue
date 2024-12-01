@@ -11,5 +11,9 @@ export const useMonthStore = defineStore('monthSelected', () => {
     return month.value as Month
   }
 
-  return { month, saveMonth, getMonth }
+  function clearMonth() {
+    month.value = undefined
+  }
+
+  return { month, saveMonth, getMonth, clearMonth }
 })

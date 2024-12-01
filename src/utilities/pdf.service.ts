@@ -34,8 +34,7 @@ export function usePdf() {
    * @returns {Promise<string>} - URL del PDF generado en Firebase Storage
    */
   const generarPdf = async (
-    ultimaFechaDePago: string,
-    mesPagar: string,
+    selectedMonth: Month,
     fechaActual: Date,
     studentInfo: User
   ): Promise<string> => {
@@ -44,10 +43,10 @@ export function usePdf() {
     // Agregar los textos básicos al PDF
     doc.text(`Estudiante: ${studentInfo.name}`, 10, 10)
     doc.text(`Carnet: ${studentInfo.carnet}`, 10, 20)
-    doc.text(`Última fecha de pago: ${ultimaFechaDePago}`, 10, 30)
-    doc.text(`Mes a pagar: ${mesPagar}`, 10, 40)
+    doc.text(`Última fecha de pago: ${selectedMonth.dueDate}`, 10, 30)
+    doc.text(`Mes a pagar: ${selectedMonth.id}`, 10, 40)
     doc.text(`Fecha actual: ${fechaActual.toLocaleDateString()}`, 10, 50)
-    doc.text(`Cantidad a pagar: $45 (No aplica Mora)`, 10, 60)
+    doc.text(`Cantidad a pagar: $${selectedMonth.totalFee}`, 10, 60)
 
     try {
       // Cargar el contenido HTML desde el archivo
@@ -56,8 +55,8 @@ export function usePdf() {
       // Reemplazar las variables del HTML con los datos
       const filledHtmlContent = htmlContent
         .replace('{{carnet}}', studentInfo.carnet)
-        .replace('{{ultimaFechaDePago}}', ultimaFechaDePago)
-        .replace('{{mesPagar}}', mesPagar)
+        .replace('{{ultimaFechaDePago}}', selectedMonth.dueDate)
+        .replace('{{mesPagar}}', selectedMonth.id)
         .replace('{{fechaActual}}', fechaActual.toLocaleDateString())
 
       // Generar el PDF con el contenido HTML
@@ -69,8 +68,8 @@ export function usePdf() {
               theme: 'plain',
               startY: pdf.previousAutoTable ? pdf.previousAutoTable.finalY + 10 : 80,
               head: [['Concepto', 'Descripción', 'Cantidad', 'Total']],
-              body: [['Matrícula', 'Pago correspondiente al ciclo', '$45', '$45']],
-              foot: [['Total', '', '', '$45']],
+              body: [[`${selectedMonth.id}`, 'Pago correspondiente', `$${selectedMonth.totalFee}`]],
+              foot: [['Total', '', '', `$${selectedMonth.totalFee}`]],
               headStyles: { fontSize: 10 },
               bodyStyles: { fontSize: 10 },
               footStyles: { fontSize: 10 },
