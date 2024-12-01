@@ -4,8 +4,8 @@ import HomeView from '@/views/HomeView.vue'
 import LoginView from '../views/LoginView.vue' // Importar la vista de Login
 import SelectPay from '@/views/SelectPay.vue'
 import DetailPay from '@/views/DetailPay.vue'
-import HomeView from '@/views/HomeView.vue'
 import ProfileView from '@/views/ProfileView.vue'
+import LoginView from '@/views/LoginView.vue'
 
 // const firebase = new Firebase()
 const router = createRouter({

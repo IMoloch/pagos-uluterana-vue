@@ -1,9 +1,19 @@
 <template>
   <main>
     <div class="card bg-base-100 w-fit shadow-xl" v-for="(month, index) of months" :key="index">
-      <div @click="saveMonth(month as Month)">
+      <div class="card-body">
+          <h2 class="card-title text-lg font-semibold text-gray-700">
+            {{ month.id }}
+          </h2>
+          <p class="text-gray-600">{{ month.charges[0] }}</p>
+          <div class="card-actions justify-end">
+            <button class="btn btn-primary btn-sm">View</button>
+            <button class="btn btn-secondary btn-sm">Edit</button>
+          </div>
+        </div>
+      <!-- <div @click="saveMonth(month as Month)">
         {{ month }}
-      </div>
+      </div> -->
     </div>
   </main>
 </template>
@@ -39,7 +49,7 @@ function getMonths() {
       querySnapshot.forEach((month) => {
         months.value.push(month.data() as Month)
       })
-      console.log(months.value)
+      console.log(months.value) 
       getFee()
     })
     .finally(() => (loading.value = false))
