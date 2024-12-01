@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/no-side-effects-in-computed-properties -->
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import { Firebase } from '@/utilities/firebase.service'
@@ -54,8 +55,8 @@ const handleSubmit = async () => {
 
 <template>
   <main>
-    <div class=" flex justify-center items-center m-5 p-2">
-      <div class=" space-y-5">
+    <div class="flex justify-center items-center m-5 p-2">
+      <div class="space-y-5">
         <div class="max-w-md bg-white shadow-lg rounded-lg overflow-hidden">
           <div class="bg-blue-900 px-6 py-4 mt-10 rounded-lg">
             <h2 class="text-white text-lg font-semibold">Iniciar Sesión</h2>
@@ -64,16 +65,34 @@ const handleSubmit = async () => {
             <form @submit.prevent="handleSubmit">
               <div>
                 <label for="email" class="text-lg font-semibold">Correo electrónico:</label>
-                <input type="email" v-model="email" id="email" class="w-full p-2 border border-gray-300 rounded-md mb-10"/>
+                <input
+                  type="email"
+                  v-model="email"
+                  id="email"
+                  class="w-full p-2 border border-gray-300 rounded-md mb-10"
+                />
                 <span class="error">{{ emailError }}</span>
               </div>
               <div>
                 <label for="password" class="text-lg font-semibold">Contraseña:</label>
-                <input type="password" v-model="password" id="password" class="w-full p-2 border border-gray-300 rounded-md mb-10" />
+                <input
+                  type="password"
+                  v-model="password"
+                  id="password"
+                  class="w-full p-2 border border-gray-300 rounded-md mb-10"
+                />
                 <span class="error">{{ passwordError }}</span>
               </div>
-              <button type="submit" :disabled="!isFormValid" class="bg-blue-900 text-white btn mb-10">Ingresar</button>
-              <p>No tienes una cuenta, <RouterLink to=""><a>regístrate</a></RouterLink></p>
+              <button
+                type="submit"
+                :disabled="!isFormValid"
+                class="bg-blue-900 text-white btn mb-10"
+              >
+                Ingresar
+              </button>
+              <p>
+                No tienes una cuenta, <RouterLink to=""><a>regístrate</a></RouterLink>
+              </p>
             </form>
           </div>
         </div>
@@ -83,9 +102,7 @@ const handleSubmit = async () => {
       <img src="\src\assets\logo-uls.png" alt="Logo ULS" class="w-96 h-auto">
     </div> -->
     </div>
-
   </main>
-
 </template>
 
 <style scoped>

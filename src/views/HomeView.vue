@@ -1,7 +1,5 @@
 <template>
   <main class="flex flex-col justify-center items-center min-h-screen bg-gray-100">
-
-
     <!-- Indicador de progreso general -->
     <div class="w-full max-w-4xl my-6 px-4">
       <div class="flex items-center justify-between mb-2">
@@ -17,17 +15,17 @@
     </div>
 
     <div class="grid grid-cols-1 gap-6 w-full max-w-4xl px-4">
-    <div class="card bg-base-100  shadow-xl w-full" v-for="(month, index) of months" :key="index">
-      <div class="card-body">
-        <div class="flex items-center justify-between">
-          <h2 class="card-title text-lg font-semibold text-gray-700">
-            {{ month.id }}
-          </h2>
-          <!-- Checkbox para marcar completado -->
-          <input
+      <div class="card bg-base-100 shadow-xl w-full" v-for="(month, index) of months" :key="index">
+        <div class="card-body">
+          <div class="flex items-center justify-between">
+            <h2 class="card-title text-lg font-semibold text-gray-700">
+              {{ month.id }}
+            </h2>
+            <!-- Checkbox para marcar completado -->
+            <input
               type="checkbox"
               class="checkbox checkbox-primary"
-              v-model="month.completed"
+              v-model="month.paid"
               @change="updateProgress"
             />
           </div>
@@ -41,7 +39,6 @@
         {{ month }}
       </div> -->
     </div>
-  </div>
   </main>
 </template>
 
@@ -50,7 +47,7 @@ import { useCurrentUser } from '@/stores/currentUser'
 import { useMonthStore } from '@/stores/month'
 import { Firebase } from '@/utilities/firebase.service'
 import { orderBy, where } from 'firebase/firestore'
-import { onMounted, ref, computed} from 'vue'
+import { onMounted, ref, computed } from 'vue'
 
 const currentUser = useCurrentUser()
 const monthStore = useMonthStore()
@@ -102,29 +99,19 @@ function getFee() {
   })
 }
 
-
-
-
 // Contar cuántos meses están completados
-const completedCount = computed(() =>
-  months.value.filter((month) => month.completed).length
-)
+const completedCount = computed(() => months.value.filter((month) => month.paid).length)
 
 // Calcular el porcentaje de progreso
 const progress = computed(() =>
-  months.value.length > 0
-    ? Math.round((completedCount.value / months.value.length) * 100)
-    : 0
+  months.value.length > 0 ? Math.round((completedCount.value / months.value.length) * 100) : 0
 )
 
 // Actualizar progreso (opcional, si necesitas alguna acción extra)
 function updateProgress() {
   console.log('Progreso actualizado:', progress.value + '%')
 }
-
-
 </script>
-
 
 <style scoped>
 /* Personalización adicional */
