@@ -17,11 +17,9 @@ const signOut = () => {
 
     <div class="wrapper">
       <nav>
-        <!-- <RouterLink :to="{name: 'home'}">Home</RouterLink> -->
-        <!-- <RouterLink :to="{name: 'login'}">Iniciar Sesión</RouterLink> Enlace a la vista de Login -->
-        <!-- <p @click="signOut">Cerrar Sesion</p> -->
-        <!-- <RouterLink to="/months">Meses</RouterLink> -->
-        <!-- <RouterLink to="/DetailPay">DetailPay</RouterLink> -->
+        <RouterLink to="/">Home</RouterLink>
+        <RouterLink to="/months">Meses</RouterLink>
+        <RouterLink to="/profile">Profile</RouterLink>
       </nav>
     </div>
   </header>

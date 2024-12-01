@@ -2,11 +2,12 @@ import { createRouter, createWebHistory } from 'vue-router'
 import { Firebase } from '@/utilities/firebase.service'
 import HomeView from '@/views/HomeView.vue'
 import LoginView from '../views/LoginView.vue' // Importar la vista de Login
-
-// const firebase = new Firebase()
 import SelectPay from '@/views/SelectPay.vue'
 import DetailPay from '@/views/DetailPay.vue'
+import HomeView from '@/views/HomeView.vue'
+import ProfileView from '@/views/ProfileView.vue'
 
+// const firebase = new Firebase()
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -14,7 +15,6 @@ const router = createRouter({
       path: '/',
       name: 'home',
       component: HomeView
-      // meta: { requiresAuth: true }
     },
     {
       path: '/login', // Ruta para la vista de Login
@@ -27,12 +27,16 @@ const router = createRouter({
       component: SelectPay
     },
     {
+      path: '/profile',
+      name: 'profile',
+      component: ProfileView
+    },
+    {
       path: '/DetailPay',
       name: 'DetailPay',
       component: DetailPay,
       props: route => ({ ultimaFechaDePago: route.query.ultimaFechaDePago })
-    }
-     
+    }, 
   ]
 })
 

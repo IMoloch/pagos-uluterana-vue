@@ -38,13 +38,11 @@
         <img src="\src\assets\logo-uls.png" alt="Logo ULS" class="w-1/2 h-auto">
       </div>
     </div>
-
     <div class="mt-60 flex justify-center items-end w-full">
       <button @click="realizarPago" class="btn btn-primary  w-60">
         Realizar Pago
       </button>
     </div>
-
   </div>
 
 </template>
