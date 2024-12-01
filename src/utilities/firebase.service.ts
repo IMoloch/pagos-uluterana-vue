@@ -77,9 +77,15 @@ export class Firebase {
   // ====================================== BASE DE DATOS =======================================
 
   // =================== OBTENER COLECCION ====================
-  getCollectionData(path: string, collectionQuery?: any) {
+  async getCollectionData(path: string, collectionQuery?: any) {
     const q = query(collection(db, path), collectionQuery)
-    return getDocs(q)
+    const querySnapshot = await getDocs(q)
+
+    // Transformar los resultados para incluir el ID del documento
+    return querySnapshot.docs.map((doc) => ({
+      id: doc.id, // ID del documento
+      ...doc.data() // Datos del documento
+    }))
   }
 
   // =================== SET UN DOCUMENTO ====================

@@ -98,6 +98,7 @@ import { ref, computed, watch } from 'vue'
 const props = defineProps<{
   isOpen: Boolean
   card: Card | undefined // Tarjeta seleccionada (si existe)
+  mode: Boolean
 }>()
 
 const emit = defineEmits(['close', 'save', 'delete'])
@@ -109,11 +110,10 @@ const cvv = ref('')
 const id = ref('')
 
 const errors = ref({ cardNumber: '', cardOwner: '', expirationDate: '', cvv: '' })
-const isEditMode = computed(() => !!props.card)
+const isEditMode = computed(() => props.mode === true)
 watch(
   () => props.card,
   (newCard) => {
-    if (!isEditMode.value) return
     if (newCard) {
       cardNumber.value = newCard.number
       cardOwner.value = newCard.name

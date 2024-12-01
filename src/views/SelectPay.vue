@@ -111,7 +111,7 @@ const realizarPago = () => {
     path: '/DetailPay',
     query: {
       ultimaFechaDePago: ultimaFechaDePago.value,
-      selectedCiclo: selectedCiclo.value,
+      selectedCiclo: selectedCiclo.value.slice(6),
       selectedMes: selectedMes.value.toLowerCase() // Pasar el mes seleccionado
     }
   })

@@ -19,7 +19,7 @@
         <div class="card-body">
           <div class="flex items-center justify-between">
             <h2 class="card-title text-lg font-semibold text-gray-700">
-              {{ month.id }}
+              {{ month.id?.toLocaleUpperCase() }} - ${{ month.totalFee }}
             </h2>
             <!-- Checkbox para marcar completado -->
             <input
@@ -29,10 +29,7 @@
               @change="updateProgress"
             />
           </div>
-          <p class="text-gray-600">{{ month.charges[0] }}</p>
-          <div class="card-actions justify-end">
-            <button class="btn btn-primary btn-sm">Detalle completo</button>
-          </div>
+          <p class="text-gray-600">Vence: {{ month.dueDate }}</p>
         </div>
       </div>
       <!-- <div @click="saveMonth(month as Month)">
@@ -65,14 +62,12 @@ const semester = {
 function getMonths() {
   loading.value = true
   let path = `users/${userInfo.value?.uid}/semesters/${2}-${semester.year}/payments`
-  let query = [orderBy('dueDate', 'asc')]
+  let query = [orderBy('dueDate', 'asc'), where('paid', '==', false)]
 
   firebaseSvc
-    .getCollectionData(path, query)
-    .then((querySnapshot) => {
-      querySnapshot.forEach((month) => {
-        months.value.push(month.data() as Month)
-      })
+    .getCollectionData(path, ...query)
+    .then((documents) => {
+      months.value = documents.map((month) => month as Month)
       console.log(months.value)
       getFee()
     })

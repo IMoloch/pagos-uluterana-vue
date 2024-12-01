@@ -83,18 +83,21 @@ const addUpdateCard = (card: Card | null = null) => {
 // OBTENER EL LISTADO DE TARJETAS DEL USUARIO
 const getCards = () => {
   loading.value = true
-  let path = `users/${userStore.currentUser?.uid}/cards`
-  let query: never[] = []
+  cards.value = []
+  const path = `users/${userStore.currentUser?.uid}/cards`
 
   firebaseSvc
-    .getCollectionData(path, query)
-    .then((querySnapshot) => {
-      cards.value = []
-      querySnapshot.forEach((card) => {
-        cards.value.push(card.data() as Card)
-      })
+    .getCollectionData(path)
+    .then((documents) => {
+      // Asignar directamente los documentos al estado `cards`
+      cards.value = documents.map((doc) => doc as Card)
     })
-    .finally(() => (loading.value = false))
+    .catch((error) => {
+      console.error('Error al obtener las tarjetas:', error)
+    })
+    .finally(() => {
+      loading.value = false
+    })
 }
 
 // Exponer el método `getCards`

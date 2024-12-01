@@ -10,6 +10,7 @@
     <AddUpdateCardModal
       :isOpen="isModalOpen"
       :card="selectedCard"
+      :mode="modalMode"
       @save="handleSaveCard"
       @delete="handleDeleteCard"
       @close="closeModal"
@@ -33,10 +34,12 @@ const currentUser = useCurrentUser()
 const isModalOpen = ref(false)
 const selectedCard = ref<Card>()
 const cardListRef = ref() // Referencia al componente CardList
+const modalMode = ref<Boolean>(false)
 
 // Función para abrir el modal con la tarjeta seleccionada o agregar una nueva
 const openModal = (card?: Card) => {
   if (card) selectedCard.value = card
+  modalMode.value = card ? true : false // Controla el modo explícitamente
   isModalOpen.value = true
 }
 
@@ -53,7 +56,8 @@ const closeModal = () => {
 }
 
 const handleSaveCard = async (card: Card) => {
-  const path = `users/${currentUser.currentUser?.uid}/cards/${card.id || ''}`
+  const userId = currentUser.currentUser?.uid
+  const path = `users/${userId}/cards/${card.id || ''}`
   if (card.id) {
     await firebase.updateDocument(path, card)
   } else {
@@ -62,6 +66,8 @@ const handleSaveCard = async (card: Card) => {
       card
     )
     card.id = newCardRef.id // Asignar el ID generado a la nueva tarjeta
+    // Guardar el ID en el documento recién creado
+    await firebase.updateDocument(`users/${userId}/cards/${card.id}`, { id: card.id })
   }
   closeModal()
   cardListRef.value.getCards() // Refrescar la lista de tarjetas
