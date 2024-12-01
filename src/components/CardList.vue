@@ -89,12 +89,18 @@ const getCards = () => {
   firebaseSvc
     .getCollectionData(path, query)
     .then((querySnapshot) => {
+      cards.value = []
       querySnapshot.forEach((card) => {
         cards.value.push(card.data() as Card)
       })
     })
     .finally(() => (loading.value = false))
 }
+
+// Exponer el método `getCards`
+defineExpose({
+  getCards
+})
 
 onMounted(() => {
   getCards()

@@ -26,69 +26,93 @@
     </div>
 
     <div class="ml-10">
-      <img src="\src\assets\logo-uls.png" alt="Logo ULS" class="w-96 h-auto">
+      <img src="\src\assets\logo-uls.png" alt="Logo ULS" class="w-96 h-auto" />
     </div>
   </div>
 
   <div class="mt-20 flex justify-center items-end w-full">
-    <button @click="handleGeneratePDF" class="btn btn-primary w-60">
-      Pagar Ciclo
-    </button>
+    <button @click="handleGeneratePDF" class="btn btn-primary w-60">Pagar Ciclo</button>
   </div>
 </template>
 
-<script>
-import { ref, computed } from 'vue';
-import { usePdf } from '../utilities/pdf.service'; // Importa el servicio para generar PDF
+<script setup lang="ts">
+import { ref, computed } from 'vue'
+import { useMonthStore } from '@/stores/month'
+import { useCurrentUser } from '@/stores/currentUser'
+import { Firebase } from '@/utilities/firebase.service'
+import { usePdf } from '../utilities/pdf.service' // Importa el servicio para generar PDF
 
-export default {
-  props: {
-    ultimaFechaDePago: {
-      type: String,
-      required: true,
-    },
-  },
-  setup(props) {
-    // Usa el servicio para generar PDF
-    const { generarPdf } = usePdf();
+const selectedMonth = useMonthStore()
+const firebase = new Firebase()
+// Props del componente
+const props = defineProps<{
+  ultimaFechaDePago: string
+  selectedCiclo: string
+  selectedMes: string
+}>()
 
-    // Datos del componente
-    const fechaActual = ref(new Date());
-    const studentInfo = {
-      name: 'Willian Romero',
-      carnet: 'ra01137239',
-    };
+// Usa el servicio para generar PDF
+const { generarPdf } = usePdf()
 
-    // Cálculo del mes a pagar
-    const mesPagar = computed(() => {
-      const mesNumero = props.ultimaFechaDePago.split('/')[1]; // Extrae el mes (número)
-      const meses = [
-        'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
-        'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre',
-      ];
-      return meses[mesNumero - 1] || 'Mes no válido';
-    });
+// Datos del componente
+const fechaActual = ref(new Date())
+const studentInfo = useCurrentUser().getCurrentUser()
 
-    // Generar el PDF al hacer clic en el botón
-    const handleGeneratePDF = async () => {
-      const downloadURL = await generarPdf(
-        props.ultimaFechaDePago, // Última fecha de pago
-        mesPagar.value, // Mes a pagar
-        fechaActual.value, // Fecha actual
-        studentInfo, // Información del estudiante
-      );
+// Cálculo del mes a pagar
+const meses = [
+  'Enero',
+  'Febrero',
+  'Marzo',
+  'Abril',
+  'Mayo',
+  'Junio',
+  'Julio',
+  'Agosto',
+  'Septiembre',
+  'Octubre',
+  'Noviembre',
+  'Diciembre'
+]
+const mesPagar = computed(() => {
+  const mesNumero = props.ultimaFechaDePago.split('/')[1] // Extrae el mes (número)
+  return meses[+mesNumero - 1] || 'Mes no válido'
+})
 
-      if (downloadURL) {
-        console.log('PDF disponible en:', downloadURL);
-      }
-    };
+// Generar el PDF al hacer clic en el botón
+const handleGeneratePDF = async () => {
+  const downloadURL = await generarPdf(
+    props.ultimaFechaDePago, // Última fecha de pago
+    mesPagar.value, // Mes a pagar
+    fechaActual.value, // Fecha actual
+    studentInfo // Información del estudiante
+  )
 
-    return {
-      fechaActual,
-      studentInfo,
-      mesPagar,
-      handleGeneratePDF,
-    };
-  },
-};
+  if (downloadURL) {
+    console.log('PDF disponible en:', downloadURL)
+    await updatePaidInfo(downloadURL)
+  }
+}
+
+// ACTUALIZA LOS DATOS DE MONTH
+const updatePaidInfo = async (ticketUrl: string) => {
+  const currentDate = new Date()
+  const month: Month = selectedMonth.getMonth() // Obtener el mes seleccionado
+
+  // Construcción de los datos para Firestore
+  const updatedData: Partial<Month> = {
+    paid: true,
+    paidDate: `${currentDate.getFullYear()}-${currentDate.getMonth() + 1}-${currentDate.getDate()}`,
+    ticketUrl: ticketUrl // URL del PDF
+  }
+
+  // Path al documento del mes en Firestore
+  const path = `users/${studentInfo.uid}/semesters/${props.selectedCiclo}-${2024}/payments/${props.selectedMes}`
+
+  try {
+    await firebase.updateDocument(path, updatedData)
+    console.log('Datos del mes actualizados correctamente')
+  } catch (error) {
+    console.error('Error al actualizar los datos del mes:', error)
+  }
+}
 </script>

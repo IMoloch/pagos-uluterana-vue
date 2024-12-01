@@ -36,6 +36,7 @@
             <button class="btn btn-primary btn-sm">Detalle completo</button>
           </div>
         </div>
+      </div>
       <!-- <div @click="saveMonth(month as Month)">
         {{ month }}
       </div> -->
@@ -75,7 +76,7 @@ function getMonths() {
       querySnapshot.forEach((month) => {
         months.value.push(month.data() as Month)
       })
-      console.log(months.value) 
+      console.log(months.value)
       getFee()
     })
     .finally(() => (loading.value = false))
