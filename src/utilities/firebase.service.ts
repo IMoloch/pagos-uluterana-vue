@@ -1,6 +1,7 @@
 import router from '@/router'
 import { initializeApp } from 'firebase/app'
 import { getDatabase } from 'firebase/database'
+import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from 'firebase/storage';
 import {
   addDoc,
   collection,
@@ -19,6 +20,7 @@ import {
   signInWithEmailAndPassword,
   onAuthStateChanged
 } from 'firebase/auth'
+import { ref } from 'vue'
 
 // Your web app's Firebase configuration
 const firebaseConfig = JSON.parse(import.meta.env.VITE_FIREBASE_CONFIG)
@@ -26,9 +28,12 @@ const firebaseConfig = JSON.parse(import.meta.env.VITE_FIREBASE_CONFIG)
 // Initialize Firebase
 const app = initializeApp(firebaseConfig)
 const db = getFirestore()
+const storage = getStorage(app);
 
 export class Firebase {
   auth = getAuth(app)
+  db = db;
+  storage = storage;
 
   async getAuth() {
     return new Promise<boolean>((resolve, reject) => {
@@ -106,15 +111,30 @@ export class Firebase {
 
   // ====================================== ALMACENAMIENTO =======================================
   // =================== SUBIR PDF A FIREBASE STORAGE ====================
-  // async uploadPdfToStorage(pdfBlob: Blob, filename: string): Promise<string> {
-  // const user: User = this.utilsSvc.getFromLocalStorage('user')
-  // const storageRef = this.storage.ref(`${user.uid}/${filename}.pdf`);
-  // await storageRef.put(pdfBlob);
-  // return storageRef.getDownloadURL().toPromise();
-  // }
+  async uploadPdfToStorage(pdfBlob: Blob, filename: string): Promise<string> {
+    try {
+      const pdfRef = storageRef(this.storage, `pdfs/${filename}.pdf`);
+      await uploadBytes(pdfRef, pdfBlob);
+      const downloadURL = await getDownloadURL(pdfRef);
+      return downloadURL;
+    } catch (error) {
+      throw new Error('Error al subir el PDF a Firebase Storage: ' + error);
+    }
+  }
 
+
+  
   // =================== GUARDAR URL DEL PDF EN FIRESTORE ====================
   async savePdfUrlToFirestore(downloadURL: string, path: string) {
     await this.setDocument(path, { url: downloadURL })
   }
+}
+
+
+// Crear instancia de Firebase
+const firebaseInstance = new Firebase();
+
+// Exportar función para usar Firebase
+export function useFirebaseService() {
+  return firebaseInstance;
 }
