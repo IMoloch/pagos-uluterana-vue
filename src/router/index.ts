@@ -5,7 +5,6 @@ import LoginView from '../views/LoginView.vue' // Importar la vista de Login
 import SelectPay from '@/views/SelectPay.vue'
 import DetailPay from '@/views/DetailPay.vue'
 import ProfileView from '@/views/ProfileView.vue'
-import LoginView from '@/views/LoginView.vue'
 
 // const firebase = new Firebase()
 const router = createRouter({
@@ -35,8 +34,8 @@ const router = createRouter({
       path: '/DetailPay',
       name: 'DetailPay',
       component: DetailPay,
-      props: route => ({ ultimaFechaDePago: route.query.ultimaFechaDePago })
-    }, 
+      props: (route) => ({ ultimaFechaDePago: route.query.ultimaFechaDePago })
+    }
   ]
 })
 
