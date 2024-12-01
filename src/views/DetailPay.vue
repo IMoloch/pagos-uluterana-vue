@@ -29,9 +29,16 @@
       <img src="\src\assets\logo-uls.png" alt="Logo ULS" class="w-96 h-auto" />
     </div>
   </div>
-
+  <div class="detail-pay-container">
+    <PayPalButton
+      :amount="amount"
+      currency="USD"
+      @payment-success="handlePaymentSuccess"
+      @payment-failure="handlePaymentFailure"
+    />
+  </div>
   <div class="mt-20 flex justify-center items-end w-full">
-    <button @click="handleGeneratePDF" class="btn btn-primary w-60">Pagar Ciclo</button>
+    <button @click="handlePaymentSuccess" class="btn btn-primary w-60">Pagar Ciclo</button>
   </div>
 </template>
 
@@ -41,6 +48,8 @@ import { useMonthStore } from '@/stores/month'
 import { useCurrentUser } from '@/stores/currentUser'
 import { Firebase } from '@/utilities/firebase.service'
 import { usePdf } from '../utilities/pdf.service' // Importa el servicio para generar PDF
+import PayPalButton from '@/components/PayPalButton.vue'
+import router from '@/router'
 
 const selectedMonth = useMonthStore()
 const firebase = new Firebase()
@@ -115,4 +124,27 @@ const updatePaidInfo = async (ticketUrl: string) => {
     console.error('Error al actualizar los datos del mes:', error)
   }
 }
+
+const amount = ref<number>(49.99) // Monto de ejemplo
+// Manejar éxito del pago
+const handlePaymentSuccess = (order: Record<string, any>) => {
+  handleGeneratePDF().then(() => {
+    router.push({ name: 'home' })
+  })
+}
+
+// Manejar errores del pago
+const handlePaymentFailure = (error: Error) => {
+  console.error('Error en el pago:', error)
+  alert('Hubo un problema al procesar el pago.')
+}
 </script>
+
+<style scoped>
+.detail-pay-container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+  text-align: center;
+}
+</style>
