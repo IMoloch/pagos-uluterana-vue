@@ -89,7 +89,7 @@ export function usePdf() {
             try {
               // Subir el Blob a Firebase Storage
               const currentUser = useCurrentUser().getCurrentUser()
-              const filename = `recibo_pago_${studentInfo.carnet}.pdf`
+              const filename = `recibo_pago_${studentInfo.carnet}_${selectedMonth.id}.pdf`
               const downloadURL = await firebaseSvc.uploadPdfToStorage(
                 currentUser,
                 pdfBlob,

@@ -9,6 +9,7 @@
             <span class="label-text">Selecciona Ciclo</span>
           </label>
           <select v-model="selectedSemester" class="select select-bordered" @change="getMonths">
+            <option disabled value="">Selecciona ciclo</option>
             <option :value="null" v-if="!semesters.length && !loadingSemesters">
               No posee ciclos registrados
             </option>
@@ -103,7 +104,7 @@ const selectetMonth = useMonthStore()
 // Datos reactivos
 const semesters = ref<{ id: string }[]>([])
 const months = ref<Month[]>([])
-const selectedSemester = ref<string | null>(null)
+const selectedSemester = ref<string | null>('')
 const loadingSemesters = ref(false)
 const loadingMonths = ref(false)
 const userInfo = ref<User>()

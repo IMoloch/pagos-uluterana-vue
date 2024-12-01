@@ -75,10 +75,10 @@ const handleGeneratePDF = async () => {
 
   if (downloadURL) {
     console.log('PDF disponible en:', downloadURL)
-    // useEmail.sendEmail(
-    //   currentUser.getCurrentUser().email,
-    //   `Tu Factura de pago esta disponible en: ${downloadURL}`
-    // )
+    useEmail.sendEmail(
+      currentUser.getCurrentUser().email,
+      `Tu Factura de pago esta disponible en: ${downloadURL}`
+    )
     await updatePaidInfo(downloadURL)
   }
 }

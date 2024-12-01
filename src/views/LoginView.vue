@@ -4,6 +4,7 @@ import { ref, computed } from 'vue'
 import { Firebase } from '@/utilities/firebase.service'
 import { RouterLink, useRouter } from 'vue-router'
 import { useCurrentUser } from '@/stores/currentUser'
+import spinnerOverlay from '@/components/spinnerOverlay.vue'
 
 const firebase = new Firebase()
 const router = useRouter()
@@ -13,16 +14,23 @@ const email = ref('')
 const password = ref('')
 const emailError = ref('')
 const passwordError = ref('')
+const emailTouched = ref(false) // Estado para rastrear si el email fue tocado
+const passwordTouched = ref(false) // Estado para rastrear si la contraseña fue tocada
+const loading = ref(false) // Controla la visibilidad del spinner
 
 const emailFormat = /^[^\s@]+@[^\s@]+\.[^\s@]+$/ // Expresión regular para validar el formato del correo
 
 const isEmailValid = computed(() => {
-  emailError.value = email.value.match(emailFormat) ? '' : 'Formato de correo inválido'
+  if (emailTouched.value) {
+    emailError.value = email.value.match(emailFormat) ? '' : 'Formato de correo inválido'
+  }
   return !emailError.value
 })
 
 const isPasswordValid = computed(() => {
-  passwordError.value = password.value ? '' : 'La contraseña no puede estar vacía'
+  if (passwordTouched.value) {
+    passwordError.value = password.value ? '' : 'La contraseña no puede estar vacía'
+  }
   return !passwordError.value
 })
 
@@ -33,27 +41,33 @@ const isFormValid = computed(() => {
 const handleSubmit = async () => {
   if (isFormValid.value) {
     try {
+      loading.value = true
       const userInfo = await firebase.signIn({
         email: email.value,
         password: password.value
       } as User)
-      console.log(userInfo.user.uid)
-
       const path = `/users/${userInfo.user.uid}`
-      firebase.getDocument(path).then((userInfo) => {
-        currentUser.saveCurrentUser(userInfo as User)
-      })
+      firebase
+        .getDocument(path)
+        .then((userInfo) => {
+          currentUser.saveCurrentUser(userInfo as User)
+        })
+        .finally(() => (loading.value = false))
 
       router.push({ name: 'home' }) // Redirigir a la página principal
     } catch (error) {
       console.error('Error al iniciar sesión:', error)
       alert('Error al iniciar sesión. Verifica tus credenciales.')
+    } finally {
+      loading.value = false
     }
   }
 }
 </script>
 
 <template>
+  <!-- Spinner Overlay -->
+  <spinnerOverlay :isLoading="loading" />
   <main>
     <div class="flex justify-center items-center m-5 p-2">
       <div class="space-y-5">
@@ -70,8 +84,9 @@ const handleSubmit = async () => {
                   v-model="email"
                   id="email"
                   class="w-full p-2 border border-gray-300 rounded-md mb-10"
+                  @blur="emailTouched = true"
                 />
-                <span class="error">{{ emailError }}</span>
+                <span v-if="emailTouched && emailError" class="error">{{ emailError }}</span>
               </div>
               <div>
                 <label for="password" class="text-lg font-semibold">Contraseña:</label>
@@ -80,8 +95,11 @@ const handleSubmit = async () => {
                   v-model="password"
                   id="password"
                   class="w-full p-2 border border-gray-300 rounded-md mb-10"
+                  @blur="passwordTouched = true"
                 />
-                <span class="error">{{ passwordError }}</span>
+                <span v-if="passwordTouched && passwordError" class="error">{{
+                  passwordError
+                }}</span>
               </div>
               <button
                 type="submit"
@@ -91,7 +109,10 @@ const handleSubmit = async () => {
                 Ingresar
               </button>
               <p>
-                No tienes una cuenta, <RouterLink to=""><a>regístrate</a></RouterLink>
+                ¿No tienes una cuenta?
+                <RouterLink :to="{ name: 'signup' }"
+                  ><a class="text-blue-700">Regístrate</a></RouterLink
+                >
               </p>
             </form>
           </div>

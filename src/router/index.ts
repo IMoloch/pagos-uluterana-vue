@@ -3,6 +3,7 @@ import LoginView from '@/views/LoginView.vue'
 import SelectPay from '@/views/SelectPay.vue'
 import DetailPay from '@/views/DetailPay.vue'
 import ProfileView from '@/views/ProfileView.vue'
+import SignupView from '@/views/SignupView.vue'
 import { useFirebaseService } from '@/utilities/firebase.service'
 import { createRouter, createWebHistory } from 'vue-router'
 
@@ -19,6 +20,11 @@ const router = createRouter({
       path: '/login',
       name: 'login',
       component: LoginView
+    },
+    {
+      path: '/signup',
+      name: 'signup',
+      component: SignupView
     },
     {
       path: '/months',
