@@ -1,51 +1,54 @@
-import { createRouter, createWebHistory } from 'vue-router'
-import { Firebase } from '@/utilities/firebase.service'
 import HomeView from '@/views/HomeView.vue'
-import LoginView from '../views/LoginView.vue' // Importar la vista de Login
+import LoginView from '@/views/LoginView.vue'
 import SelectPay from '@/views/SelectPay.vue'
 import DetailPay from '@/views/DetailPay.vue'
 import ProfileView from '@/views/ProfileView.vue'
+import { useFirebaseService } from '@/utilities/firebase.service'
+import { createRouter, createWebHistory } from 'vue-router'
 
-// const firebase = new Firebase()
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
       path: '/',
       name: 'home',
-      component: HomeView
+      component: HomeView,
+      meta: { requiresAuth: true } // Ruta protegida
     },
     {
-      path: '/login', // Ruta para la vista de Login
+      path: '/login',
       name: 'login',
       component: LoginView
     },
     {
       path: '/months',
       name: 'months',
-      component: SelectPay
+      component: SelectPay,
+      meta: { requiresAuth: true } // Ruta protegida
     },
     {
       path: '/profile',
       name: 'profile',
-      component: ProfileView
+      component: ProfileView,
+      meta: { requiresAuth: true } // Ruta protegida
     },
     {
       path: '/DetailPay',
       name: 'DetailPay',
       component: DetailPay,
-      props: (route) => ({ ultimaFechaDePago: route.query.ultimaFechaDePago })
+      props: (route) => ({ ultimaFechaDePago: route.query.ultimaFechaDePago }),
+      meta: { requiresAuth: true } // Ruta protegida
     }
   ]
 })
 
-// router.beforeEach(async (to) => {
-//   const isAuth = await firebase.getAuth();
-//   if (to.matched.some((route) => route.meta.requiresAuth)) {
-//     if (!isAuth) return { name: 'login' }
-//   } else {
-//     if (isAuth) return { name: 'home'}
-//   }
-// });
+router.beforeEach(async (to) => {
+  const isAuth = await useFirebaseService().getAuth()
+  if (to.matched.some((route) => route.meta.requiresAuth)) {
+    if (!isAuth) return { name: 'login' } // Redirigir al login si no está autenticado
+  } else {
+    if (isAuth && to.name === 'login') return { name: 'home' } // Redirigir al home si está autenticado y visita login
+  }
+})
 
 export default router

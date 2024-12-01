@@ -9,27 +9,24 @@
             </div>
             <div class="hidden md:block">
               <div class="ml-10 flex items-baseline space-x-4">
-                <a
-                  class="rounded-md bg-gray-900 px-3 py-2 text-sm font-medium text-white"
+                <RouterLink
+                  :to="{ name: 'home' }"
+                  :class="getLinkClass('home')"
                   aria-current="page"
                 >
-                  <RouterLink :to="{ name: 'home' }">Home</RouterLink>
-                </a>
-                <a
-                  class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white"
-                >
-                  <RouterLink :to="{ name: 'months' }">Meses</RouterLink>
-                </a>
-                <a
-                  class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white"
-                >
-                  <RouterLink :to="{ name: 'profile' }">Perfil</RouterLink>
-                </a>
+                  Home
+                </RouterLink>
+                <RouterLink :to="{ name: 'months' }" :class="getLinkClass('months')">
+                  Meses
+                </RouterLink>
+                <RouterLink :to="{ name: 'profile' }" :class="getLinkClass('profile')">
+                  Perfil
+                </RouterLink>
               </div>
             </div>
           </div>
 
-          <div @click="signOut" class="bg-gray-500 rounded-md p-2 hover:bg-cyan-700 cursor-pointer">
+          <div @click="signOut" class="bg-red-700 rounded-md p-2 hover:bg-cyan-700 cursor-pointer">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
@@ -94,51 +91,37 @@
       <!-- Menú móvil -->
       <div class="md:hidden" v-show="isMenuOpen" id="mobile-menu">
         <div class="space-y-1 px-2 pb-3 pt-2 sm:px-3">
-          <a
-            href="#"
-            class="block rounded-md bg-gray-900 px-3 py-2 text-base font-medium text-white"
-            >Dashboard</a
-          >
-          <a
-            href="#"
-            class="block rounded-md px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white"
-            >Team</a
-          >
-          <a
-            href="#"
-            class="block rounded-md px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white"
-            >Projects</a
-          >
+          <RouterLink :to="{ name: 'home' }" :class="getLinkClass('home')"> Home </RouterLink>
+          <RouterLink :to="{ name: 'months' }" :class="getLinkClass('months')"> Meses </RouterLink>
+          <RouterLink :to="{ name: 'profile' }" :class="getLinkClass('profile')">
+            Perfil
+          </RouterLink>
         </div>
       </div>
     </nav>
   </div>
 </template>
 
-<script>
-import { RouterLink } from 'vue-router'
+<script setup lang="ts">
 import { ref } from 'vue'
+import { useRoute } from 'vue-router'
 import { Firebase } from '@/utilities/firebase.service'
 
-export default {
-  name: 'NavMenu',
-  setup() {
-    const isMenuOpen = ref(false)
-    const firebase = new Firebase()
+const isMenuOpen = ref(false)
+const route = useRoute()
+const firebase = new Firebase()
 
-    const signOut = () => {
-      firebase.signOut()
-    }
+const signOut = (): void => {
+  firebase.signOut()
+}
 
-    const toggleMenu = () => {
-      isMenuOpen.value = !isMenuOpen.value
-    }
+const toggleMenu = (): void => {
+  isMenuOpen.value = !isMenuOpen.value
+}
 
-    return {
-      isMenuOpen,
-      toggleMenu,
-      signOut
-    }
-  }
+const getLinkClass = (routeName: string): string => {
+  return route.name === routeName
+    ? 'rounded-md px-3 py-2 text-sm font-medium text-white bg-gray-900'
+    : 'rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white'
 }
 </script>

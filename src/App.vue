@@ -1,23 +1,13 @@
 <script setup lang="ts">
-import { RouterLink, RouterView } from 'vue-router'
-import { Firebase } from '@/utilities/firebase.service'
+import { RouterView } from 'vue-router'
 import Navigation from '@/components/NavMenu.vue'
-
-const firebase = new Firebase()
-
-const signOut = () => {
-  firebase.signOut()
-}
 </script>
 
 <template>
   <header>
     <Navigation />
-    <!-- <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" /> -->
-
     <div class="wrapper"></div>
   </header>
-
   <RouterView />
 </template>
 
